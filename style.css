@@ -1,0 +1,39 @@
+body { font-family: sans-serif; display: flex; justify-content: center; align-items: flex-start; margin: 10px; background-color: #dfe6ee; }
+#app-container { display: flex; gap: 15px; }
+#toolbar {
+    width: 80px; padding: 10px; background-color: #ffffff; border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 10px;
+}
+.tool-btn {
+    background-color: #f1f3f5; border: 1px solid #dee2e6; border-radius: 5px;
+    padding: 10px; font-size: 14px; cursor: pointer; transition: all 0.2s ease;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    color: #343a40;
+    font-weight: 500;
+}
+.tool-btn:hover { background-color: #e9ecef; border-color: #ced4da; }
+.tool-btn.active { background-color: #007bff; color: white; border-color: #0056b3; }
+.tool-icon { font-size: 24px; line-height: 1; }
+
+#main-content { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+#status-bar { width: 600px; background-color: #343a40; color: white; text-align: center; padding: 8px 0; font-size: 14px; height: 20px; line-height: 20px; border-radius: 5px; }
+#canvas-container { background-color: #fff; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: crosshair; }
+
+#properties-panel { width: 300px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+#properties-header { padding: 15px; border-bottom: 1px solid #e9ecef; }
+#properties-header h3 { margin: 0; font-size: 18px; color: #343a40; }
+#properties-header button { margin-top: 12px; }
+#properties-content { padding: 0 15px 15px 15px; }
+
+.prop-group { display: none; }
+.prop-group.active { display: block; }
+.prop-group h4 { margin-top: 15px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 8px; color: #495057; }
+label { display: block; margin-top: 10px; font-size: 14px; font-weight: 500; color: #495057; }
+input[type="text"], input[type="number"] { width: calc(100% - 12px); padding: 5px; margin-top: 5px; border: 1px solid #ced4da; border-radius: 4px; }
+button { color: white; padding: 10px 15px; border: none; cursor: pointer; width: 100%; margin-top: 10px; border-radius: 5px; font-weight: bold; }
+.btn-draw { background-color: #28a745; } .btn-draw:hover { background-color: #218838; }
+.btn-mouse { background-color: #007bff; } .btn-mouse:hover { background-color: #0069d9; }
+.btn-action { background-color: #dc3545; } .btn-action:hover { background-color: #c82333; }
+.transform-grid { display: grid; grid-template-columns: 80px 1fr 1fr; align-items: center; gap: 5px 10px; margin-top: 8px; }
+.transform-grid label { margin: 0; font-weight: bold; }
+.transform-grid input { width: 100%; box-sizing: border-box; margin: 0; }

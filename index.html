@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Trabalho Final - Computação Gráfica (Corrigido)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app-container">
+        <div id="toolbar">
+            <button class="tool-btn" data-tool="line"><span class="tool-icon">📏</span> Reta</button>
+            <button class="tool-btn" data-tool="circle"><span class="tool-icon">⭕</span> Círculo</button>
+            <button class="tool-btn" data-tool="bezier"><span class="tool-icon">〰️</span> Curva</button>
+            <button class="tool-btn" data-tool="polygon"><span class="tool-icon">⬟</span> Polígono</button>
+            <button class="tool-btn" data-tool="clipping"><span class="tool-icon">✂️</span> Recorte</button>
+            <button class="tool-btn" data-tool="transform"><span class="tool-icon">✥</span> Mover</button>
+            <button class="tool-btn" data-tool="projection"><span class="tool-icon">🧊</span> 3D</button>
+        </div>
+
+        <div id="main-content">
+            <div id="status-bar">Selecione uma ferramenta na barra à esquerda.</div>
+            <div id="canvas-container">
+                <canvas id="mainCanvas" width="600" height="600"></canvas>
+            </div>
+        </div>
+
+        <div id="properties-panel">
+            <div id="properties-header">
+                <h3>Opções da Ferramenta</h3>
+                <button class="btn-action" id="clear-canvas-btn">Limpar Tela</button>
+            </div>
+            <div id="properties-content">
+                <div id="none-props" class="prop-group active">
+                    <h4>Nenhuma Ferramenta Ativa</h4>
+                    <p>Selecione uma ferramenta na barra à esquerda para começar a desenhar.</p>
+                </div>
+
+                <div id="line-props" class="prop-group">
+                    <h4>Reta (Bresenham)</h4>
+                    <label for="bresenham-p1">Ponto 1 (x,y):</label><input type="text" id="bresenham-p1">
+                    <label for="bresenham-p2">Ponto 2 (x,y):</label><input type="text" id="bresenham-p2">
+                    <button class="btn-draw" id="draw-line-btn">Desenhar com Pontos do Campo</button>
+                </div>
+
+                <div id="circle-props" class="prop-group">
+                    <h4>Círculo / Elipse</h4>
+                    <label>Centro (x,y):</label><input type="text" id="circle-center">
+                    <label>Raio X:</label><input type="number" id="circle-radius-x">
+                    <button class="btn-draw" id="draw-circle-btn">Desenhar Círculo</button>
+                    <hr style="margin: 15px 0;">
+                    <label>Raio Y (Elipse):</label><input type="number" id="circle-radius-y">
+                    <button class="btn-draw" id="draw-ellipse-btn">Desenhar Elipse</button>
+                </div>
+                
+                <div id="bezier-props" class="prop-group">
+                     <h4>Curva de Bézier</h4>
+                     <label>Pontos (P0,P1,P2,P3):</label><input type="text" id="bezier-points">
+                     <button class="btn-draw" id="draw-bezier-btn">Desenhar Curva</button>
+                </div>
+
+                <div id="polygon-props" class="prop-group">
+                    <h4>Polígono e Preenchimento</h4>
+                    <label>Vértices (x,y, ...):</label><input type="text" id="polygon-points">
+                    <button class="btn-action" id="finalize-polygon-btn" style="display:none;">Finalizar Polígono</button>
+                    <hr>
+                    <label>Ponto Semente (Fill):</label><input type="text" id="fill-seed">
+                    <button class="btn-mouse" id="define-seed-btn">Definir Semente</button>
+                    <hr>
+                    <button class="btn-draw" id="fill-scanline-btn">Preencher (Varredura)</button>
+                    <button class="btn-draw" id="fill-recursive-btn">Preencher (Recursivo)</button>
+                </div>
+                
+                <div id="clipping-props" class="prop-group">
+                    <h4>Recorte (Clipping)</h4>
+                    <label>Janela (xmin,ymin, xmax,ymax):</label><input type="text" id="clip-window" value="-15,-15, 15,15">
+                    <hr>
+                    <label>Linha de Entrada:</label><input type="text" id="clip-line" value="-20,-5, 20,15">
+                    <button class="btn-draw" id="clip-line-btn">Recortar Linha</button>
+                    <hr>
+                    <label>Polígono de Entrada:</label><input type="text" id="clip-polygon" value="-18,-18, 0,18, 18,-18">
+                    <button class="btn-draw" id="clip-polygon-btn">Recortar Polígono</button>
+                </div>
+
+                <div id="transform-props" class="prop-group">
+                    <h4>Transformações 2D</h4>
+                    <label>Vértices do Polígono:</label><input type="text" id="transform-polygon" value="2,2, 8,2, 5,7">
+                    <label>Pivô (x,y):</label><input type="text" id="transform-pivot" value="2,2">
+                    <hr>
+                    <div class="transform-grid">
+                        <label>Translação</label> <input type="number" id="translation-tx" value="0"> <input type="number" id="translation-ty" value="0">
+                        <label>Escala</label> <input type="number" id="scale-sx" value="1" step="0.1"> <input type="number" id="scale-sy" value="1" step="0.1">
+                        <label>Rotação</label> <input type="number" id="rotation-angle" value="0"> <span></span>
+                    </div>
+                    <button class="btn-draw" id="finalize-transform-btn">Aplicar e Substituir</button>
+                </div>
+                
+                <div id="projection-props" class="prop-group">
+                    <h4>Projeções 3D</h4>
+                    <p>Renderiza um cubo padrão com a projeção selecionada.</p>
+                    <button class="btn-draw" data-projection="orthogonal">Ortogonal</button>
+                    <button class="btn-draw" data-projection="perspective">Perspectiva</button>
+                    <button class="btn-draw" data-projection="cavalier">Cavalier</button>
+                    <button class="btn-draw" data-projection="cabinet">Cabinet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
