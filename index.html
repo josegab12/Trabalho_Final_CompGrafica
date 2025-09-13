@@ -73,17 +73,21 @@
                 <div id="clipping-props" class="prop-group">
                     <h4>Recorte (Clipping)</h4>
                     <label>Janela (xmin,ymin, xmax,ymax):</label><input type="text" id="clip-window" value="-15,-15, 15,15">
+                    <button class="btn-mouse" id="define-clip-window-btn">Definir Janela com Mouse</button>
                     <hr>
                     <label>Linha de Entrada:</label><input type="text" id="clip-line" value="-20,-5, 20,15">
+                    <button class="btn-mouse" id="define-clip-line-btn">Definir Linha com Mouse</button>
                     <button class="btn-draw" id="clip-line-btn">Recortar Linha</button>
                     <hr>
                     <label>Polígono de Entrada:</label><input type="text" id="clip-polygon" value="-18,-18, 0,18, 18,-18">
+                    <button class="btn-mouse" id="define-clip-polygon-btn">Definir Polígono com Mouse</button>
                     <button class="btn-draw" id="clip-polygon-btn">Recortar Polígono</button>
                 </div>
 
                 <div id="transform-props" class="prop-group">
                     <h4>Transformações 2D</h4>
-                    <label>Vértices do Polígono:</label><input type="text" id="transform-polygon" value="2,2, 8,2, 5,7">
+                    <label>Vértices do Polígono:</label>
+                    <input type="text" id="transform-polygon" value="2,2, 8,2, 5,7">
                     <label>Pivô (x,y):</label><input type="text" id="transform-pivot" value="2,2">
                     <hr>
                     <div class="transform-grid">

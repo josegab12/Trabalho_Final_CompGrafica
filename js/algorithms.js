@@ -7,7 +7,6 @@ import { parsePoints } from './uiManager.js';
 
 /**
  * Desenha uma linha entre dois pontos usando o algoritmo de Bresenham.
- * Este algoritmo é otimizado para usar apenas aritmética de inteiros.
  * @param {number} x1 - Coordenada X do ponto inicial.
  * @param {number} y1 - Coordenada Y do ponto inicial.
  * @param {number} x2 - Coordenada X do ponto final.
@@ -20,7 +19,7 @@ export function bresenham(x1, y1, x2, y2, color = 'red') {
     const dy = -Math.abs(y2 - y1);
     const sy = y1 < y2 ? 1 : -1;
     
-    let error = dx + dy; // Parâmetro de decisão inicial.
+    let error = dx + dy;
 
     while (true) {
         drawPixel(x1, y1, color);
@@ -28,14 +27,12 @@ export function bresenham(x1, y1, x2, y2, color = 'red') {
             break;
         }
         
-        const error2 = 2 * error; // Dobro do erro para evitar frações.
+        const error2 = 2 * error;
 
-        // Se error2 for maior ou igual a dy, movemos na direção X.
         if (error2 >= dy) {
             error += dy;
             x1 += sx;
         }
-        // Se error2 for menor ou igual a dx, movemos na direção Y.
         if (error2 <= dx) {
             error += dx;
             y1 += sy;
@@ -56,7 +53,6 @@ export function midpointCircle(centerX, centerY, radius, color = 'red') {
     let decisionParameter = 1 - x;
 
     while (x >= y) {
-        // Desenha o pixel em todos os 8 octantes por simetria
         drawPixel(centerX + x, centerY + y, color);
         drawPixel(centerX + y, centerY + x, color);
         drawPixel(centerX - y, centerY + x, color);
@@ -87,17 +83,44 @@ export function midpointCircle(centerX, centerY, radius, color = 'red') {
  * @param {string} color - Cor da elipse.
  */
 export function midpointEllipse(centerX, centerY, radiusX, radiusY, color = 'red') {
-    // ... (O código da elipse é mais complexo e pode ser explicado em alto nível)
-    let x, y, p, rx2 = radiusX*radiusX, ry2 = radiusY*radiusY, tworx2 = 2*rx2, twory2 = 2*ry2;
-    x=0; y=radiusY; p=Math.round(ry2 - rx2*radiusY + 0.25*rx2);
-    while((twory2*x) < (twrx2*y)){
-        drawPixel(centerX+x,centerY+y,color); drawPixel(centerX-x,centerY+y,color); drawPixel(centerX+x,centerY-y,color); drawPixel(centerX-x,centerY-y,color);
-        x++; if(p<0){p+=twory2*x+ry2;}else{y--; p+=twory2*x-twrx2*y+ry2;}
+    let x = 0;
+    let y = radiusY;
+    let rx2 = radiusX * radiusX;
+    let ry2 = radiusY * radiusY;
+    let tworx2 = 2 * rx2;
+    let twory2 = 2 * ry2;
+    let p;
+
+    // Região 1
+    p = Math.round(ry2 - rx2 * radiusY + 0.25 * rx2);
+    while ((twory2 * x) < (twrx2 * y)) {
+        drawPixel(centerX+x, centerY+y, color);
+        drawPixel(centerX-x, centerY+y, color);
+        drawPixel(centerX+x, centerY-y, color);
+        drawPixel(centerX-x, centerY-y, color);
+        x++;
+        if (p < 0) {
+            p += twory2 * x + ry2;
+        } else {
+            y--;
+            p += twory2 * x - tworx2 * y + ry2;
+        }
     }
-    p=Math.round(ry2*(x+0.5)*(x+0.5)+rx2*(y-1)*(y-1)-rx2*ry2);
-    while(y>=0){
-        drawPixel(centerX+x,centerY+y,color); drawPixel(centerX-x,centerY+y,color); drawPixel(centerX+x,centerY-y,color); drawPixel(centerX-x,centerY-y,color);
-        y--; if(p>0){p-=twrx2*y+rx2;}else{x++; p+=twory2*x-twrx2*y+rx2;}
+
+    // Região 2
+    p = Math.round(ry2 * (x + 0.5) * (x + 0.5) + rx2 * (y - 1) * (y - 1) - rx2 * ry2);
+    while (y >= 0) {
+        drawPixel(centerX+x, centerY+y, color);
+        drawPixel(centerX-x, centerY+y, color);
+        drawPixel(centerX+x, centerY-y, color);
+        drawPixel(centerX-x, centerY-y, color);
+        y--;
+        if (p > 0) {
+            p -= tworx2 * y + rx2;
+        } else {
+            x++;
+            p += twory2 * x - tworx2 * y + rx2;
+        }
     }
 }
 
@@ -110,17 +133,13 @@ export function midpointEllipse(centerX, centerY, radiusX, radiusY, color = 'red
  * @param {string} color - Cor da curva.
  */
 export function bezier(p0, p1, p2, p3, color = 'red') {
-    const steps = 100; // Número de segmentos de reta para aproximar a curva
+    const steps = 100;
     let lastPoint = p0;
 
     for (let i = 1; i <= steps; i++) {
         const t = i / steps;
-        
-        // Fórmula cúbica de Bézier
         const x = (1-t)**3 * p0.x + 3*(1-t)**2*t * p1.x + 3*(1-t)*t**2 * p2.x + t**3 * p3.x;
         const y = (1-t)**3 * p0.y + 3*(1-t)**2*t * p1.y + 3*(1-t)*t**2 * p2.y + t**3 * p3.y;
-        
-        // Rasteriza o segmento da curva usando Bresenham
         bresenham(Math.round(lastPoint.x), Math.round(lastPoint.y), Math.round(x), Math.round(y), color);
         lastPoint = { x, y };
     }
@@ -134,13 +153,9 @@ export function bezier(p0, p1, p2, p3, color = 'red') {
  */
 export function drawPolygon(points, color = 'blue', closed = true) {
     if (!points || points.length < 2) return;
-    
-    // Conecta cada ponto ao próximo
     for (let i = 0; i < points.length - 1; i++) {
         bresenham(points[i].x, points[i].y, points[i+1].x, points[i+1].y, color);
     }
-    
-    // Se for fechado, conecta o último ao primeiro
     if (closed && points.length > 2) {
         bresenham(points[points.length - 1].x, points[points.length - 1].y, points[0].x, points[0].y, color);
     }
@@ -150,9 +165,39 @@ export function drawPolygon(points, color = 'blue', closed = true) {
 // =================================================================
 // ALGORITMOS DE PREENCHIMENTO
 // =================================================================
-export function scanlineFill(poly,c='purple'){if(poly.length<3)return;let minY=Infinity,maxY=-Infinity;poly.forEach(p=>{minY=Math.min(minY,p.y);maxY=Math.max(maxY,p.y);});for(let y=minY;y<=maxY;y++){const ints=[];for(let i=0;i<poly.length;i++){const p1=poly[i],p2=poly[(i+1)%poly.length];if((p1.y<=y&&p2.y>y)||(p2.y<=y&&p1.y>y)){const x=(y-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)+p1.x;ints.push(x);}}ints.sort((a,b)=>a-b);for(let i=0;i<ints.length;i+=2){if(i+1<ints.length){for(let x=Math.ceil(ints[i]);x<ints[i+1];x++){drawPixel(x,y,c);}}}}}
-export function floodFill(startX,startY,fillColor){function getPixelColor(x,y){const c=gridToCanvas(x,y);const p=ctx.getImageData(c.x+gridSize/2,c.y+gridSize/2,1,1).data;return`rgba(${p[0]}, ${p[1]}, ${p[2]}, ${p[3]})`}const startColor=getPixelColor(startX,startY);const fillRgba=ctx.fillStyle=fillColor;if(startColor===fillRgba)return;const stack=[{x:startX,y:startY}];const visited=new Set();visited.add(`${startX},${startY}`);while(stack.length>0){const{x,y}=stack.pop();if(getPixelColor(x,y)===startColor){drawPixel(x,y,fillColor);const n=[{dx:1,dy:0},{dx:-1,dy:0},{dx:0,dy:1},{dx:0,dy:-1}];for(const i of n){const nextX=x+i.dx,nextY=y+i.dy;if(!visited.has(`${nextX},${nextY}`)){stack.push({x:nextX,y:nextY});visited.add(`${nextX},${nextY}`);}}}}}
 
+/**
+ * Preenche um polígono usando o algoritmo de Scanline.
+ * @param {Array<object>} polygon - Array de vértices do polígono.
+ * @param {string} color - Cor de preenchimento.
+ */
+export function scanlineFill(polygon, color = 'purple') {
+    if (polygon.length < 3) return;
+    let minY = Infinity, maxY = -Infinity;
+    polygon.forEach(p => {
+        minY = Math.min(minY, p.y);
+        maxY = Math.max(maxY, p.y);
+    });
+    for (let y = minY; y <= maxY; y++) {
+        const intersections = [];
+        for (let i = 0; i < polygon.length; i++) {
+            const p1 = polygon[i];
+            const p2 = polygon[(i + 1) % polygon.length];
+            if ((p1.y <= y && p2.y > y) || (p2.y <= y && p1.y > y)) {
+                const x = (y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
+                intersections.push(x);
+            }
+        }
+        intersections.sort((a, b) => a - b);
+        for (let i = 0; i < intersections.length; i += 2) {
+            if (i + 1 < intersections.length) {
+                for (let x = Math.ceil(intersections[i]); x < intersections[i + 1]; x++) {
+                    drawPixel(x, y, color);
+                }
+            }
+        }
+    }
+}
 
 // =================================================================
 // ALGORITMOS DE TRANSFORMAÇÃO
@@ -205,34 +250,42 @@ export function cohenSutherland(p1, p2, xmin, ymin, xmax, ymax) {
         else { x2 = Math.round(x); y2 = Math.round(y); code2 = computeCode(x2, y2); }
     }
 }
+
+const intersect = (p1, p2, p3, p4) => {
+    const denominator = (p4.y - p3.y) * (p2.x - p1.x) - (p4.x - p3.x) * (p2.y - p1.y);
+    if (denominator === 0) return null;
+    const ua = ((p4.x - p3.x) * (p1.y - p3.y) - (p4.y - p3.y) * (p1.x - p3.x)) / denominator;
+    return { x: Math.round(p1.x + ua * (p2.x - p1.x)), y: Math.round(p1.y + ua * (p2.y - p1.y)) };
+};
+
+const clipAgainstEdge = (subjectPolygon, p1, p2) => {
+    const outputList = [];
+    if (subjectPolygon.length === 0) return outputList;
+    let S = subjectPolygon[subjectPolygon.length - 1];
+    for (const E of subjectPolygon) {
+        const s_inside = (p2.x - p1.x) * (S.y - p1.y) - (p2.y - p1.y) * (S.x - p1.x) <= 0;
+        const e_inside = (p2.x - p1.x) * (E.y - p1.y) - (p2.y - p1.y) * (E.x - p1.x) <= 0;
+        if (s_inside && e_inside) {
+            outputList.push(E);
+        } else if (s_inside && !e_inside) {
+            const intersection = intersect(S, E, p1, p2);
+            if (intersection) outputList.push(intersection);
+        } else if (!s_inside && e_inside) {
+            const intersection = intersect(S, E, p1, p2);
+            if (intersection) outputList.push(intersection);
+            outputList.push(E);
+        }
+        S = E;
+    }
+    return outputList;
+};
+
 export function sutherlandHodgman(subjectPolygon, clipPolygon) {
     let outputList = subjectPolygon;
-    for (let j = 0; j < clipPolygon.length; j++) {
-        const cp1 = clipPolygon[j];
-        const cp2 = clipPolygon[(j + 1) % clipPolygon.length];
-        const inputList = outputList;
-        outputList = [];
-        if (inputList.length === 0) break;
-        let s = inputList[inputList.length - 1];
-        for (let i = 0; i < inputList.length; i++) {
-            const e = inputList[i];
-            const s_inside = (cp2.x - cp1.x) * (s.y - cp1.y) - (cp2.y - cp1.y) * (s.x - cp1.x) <= 0;
-            const e_inside = (cp2.x - cp1.x) * (e.y - cp1.y) - (cp2.y - cp1.y) * (e.x - cp1.x) <= 0;
-            if (s_inside !== e_inside) {
-                const dx = e.x - s.x, dy = e.y - s.y;
-                const cdx = cp2.x - cp1.x, cdy = cp2.y - cp1.y;
-                const denominator = dx * cdy - dy * cdx;
-                if (denominator !== 0) {
-                    const t = ((cp1.x - s.x) * cdy - (cp1.y - s.y) * cdx) / denominator;
-                    outputList.push({ x: Math.round(s.x + t * dx), y: Math.round(s.y + t * dy) });
-                }
-            }
-            if (e_inside) {
-                outputList.push(e);
-            }
-            s = e;
-        }
-    }
+    outputList = clipAgainstEdge(outputList, clipPolygon[0], clipPolygon[1]);
+    outputList = clipAgainstEdge(outputList, clipPolygon[1], clipPolygon[2]);
+    outputList = clipAgainstEdge(outputList, clipPolygon[2], clipPolygon[3]);
+    outputList = clipAgainstEdge(outputList, clipPolygon[3], clipPolygon[0]);
     return outputList;
 }
 
@@ -277,7 +330,6 @@ export function projectAndDraw(type) {
             break;
     }
     
-    // Desenha as arestas do cubo projetado
     cubeEdges.forEach(edge => {
         const v1 = projectedVertices[edge[0]];
         const v2 = projectedVertices[edge[1]];
